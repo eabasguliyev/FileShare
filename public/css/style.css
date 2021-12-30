@@ -1,0 +1,58 @@
+a {
+  text-decoration: none;
+}
+
+.bg-light-red {
+  background-color: #bd032f;
+}
+
+.select-lang {
+  border: 0;
+}
+
+.btn:focus,
+.form-select:focus.select-lang {
+  box-shadow: none;
+}
+
+body,
+p {
+  margin: 0;
+}
+
+#submit-file {
+  align-self: center;
+}
+
+#result-count {
+  align-self: start;
+}
+
+body::before {
+  display: block;
+  height: 90px;
+  content: "";
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.unselectable {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.progress-bar {
+  transition: width 0.25s;
+}
+
+@media screen and (max-width: 992px) {
+  .select-lang {
+    width: 80px;
+    margin: auto;
+  }
+}
