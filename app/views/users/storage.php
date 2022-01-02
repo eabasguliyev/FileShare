@@ -25,7 +25,7 @@
                             <td><?= $file->download_count ?> times</td>
                             <td>
                                 <a href="" class="me-2"><i class="bi bi-pencil-square"></i></a>
-                                <a href=""><i class="bi bi-trash"></i></a>
+                                <a href="<?= URLROOT . '/files/delete/' . $file->file_id ?>"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>    

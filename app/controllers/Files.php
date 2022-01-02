@@ -186,4 +186,24 @@
                 $this->view('files/success', $data);
             }else die("Link is broken");
         }
+
+        /** Delete file */
+        public function delete($fileId){
+            if($_SERVER['REQUEST_METHOD'] == 'GET'){
+                $file = $this->fileModel->getFileById($fileId);
+
+                if($file){
+                    if($_SESSION['user_storage_id'] == $file->storage_id ){
+                        if($this->fileModel->delete($fileId))
+                        {
+                            $this->userStorageModel->updateUsedSize($file->storage_id, '-' . $file->size);                            
+                            $this->userStorageModel->updateFileCount($file->storage_id, -1);
+
+                            redirect('users/storage/' . $_SESSION['user_storage_id']);
+                        }
+                        else die('Something went wrong');
+                    }else die("You don't have access for this operation");
+                }else die("File is not found");
+            }
+        }
     }

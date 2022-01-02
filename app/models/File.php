@@ -41,4 +41,33 @@
                 return false;
             return $this->db->lastInsertId();
         }
+
+        /**
+         *  Delete a file record
+         *  @param int $fileId file id
+         *  @return bool return false if any execution fails, otherwise false 
+         */
+        public function delete($fileId){
+            $sql = "DELETE FROM `file` WHERE `id` = :file_id";
+            $this->db->query($sql);
+            $this->db->bind(':file_id', $fileId);
+            
+            return $this->db->execute();
+        }
+
+        /**
+         *  Get a file record
+         *  @param int $fileId file id
+         *  @return mixed return false if any execution fails, otherwise return record 
+         */
+        public function getFileById($fileId){
+            $sql = "SELECT * FROM `file` INNER JOIN `fileinfo` 
+                                            ON `fileinfo`.`file_id` = `file`.`id`
+                                        WHERE `file`.`id` = :file_id";
+            $this->db->query($sql);
+            $this->db->bind(':file_id', $fileId);
+           
+
+            return  $this->db->execute() ? $this->db->single() : false;
+        }
     }
