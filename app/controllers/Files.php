@@ -1,11 +1,14 @@
 <?php
     class Files extends Controller{
         private File $fileModel;
-
+        private FileInfo $fileInfoModel;
+        private UserStorage $userStorageModel;
+        
         public function __construct()
         {
             $this->fileModel = $this->model('File');
             $this->fileInfoModel = $this->model('FileInfo');
+            $this->userStorageModel = $this->model('UserStorage');
         }
 
         /**
@@ -19,21 +22,19 @@
         /**
          *  All Uploaded Public Files Page
          */
-        public function all(){
+        public function all($pageNo = 1){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
             }else{
                 // Load view
-                $result = $this->fileInfoModel->getAllFileInfo([0, 10], FileHelper::FILE_ATTR_PUBLIC);
+                $start = ($pageNo - 1) * 10;
+                $result = $this->fileInfoModel->getFileInfosByMode([$start, $start + 10], FileHelper::FILE_ATTR_PUBLIC);
 
                 usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
 
-                $data = [
-                    'files' => $result['files'],
-                    'total_count' => $result['total_count']
-                ];
+                $result['page_no'] = $pageNo;
 
-                $this->view('files/all', $data);
+                $this->view('files/all', $result);
             }
         }
 
@@ -98,6 +99,8 @@
                 if($id = $this->fileModel->uploadFile($file))
                 {
                     // File uploaded successfully
+                    $this->userStorageModel->updateFileCount($_SESSION['user_storage_id'], '1');
+                    $this->userStorageModel->updateUsedSize($_SESSION['user_storage_id'], $file['size']);
                     // Print file info id
                     echo $id;
                 }else die("Something went wrong!");

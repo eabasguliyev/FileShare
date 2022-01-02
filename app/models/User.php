@@ -3,7 +3,6 @@
      *  User Model
      */
     class User extends Model{
-
         /**
          *  Write user record to database
          *  @param array $data user input

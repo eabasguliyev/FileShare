@@ -1,24 +1,26 @@
 <?php
     class Users extends Controller{
         private User $userModel;
-        private UserStorage $userStorage;
+        private UserStorage $userStorageModel;
+        private FileInfo $fileInfoModel;
         
         /**
          *  Initialize models
          */
         public function __construct()
         {
-            if(isLoggedIn())
-                redirect('files/upload');
-                
             $this->userModel = $this->model('User');
-            $this->userStorage = $this->model('UserStorage');
+            $this->userStorageModel = $this->model('UserStorage');
+            $this->fileInfoModel = $this->model('FileInfo');
         }
 
         /** 
          *  User register
          */
         public function register(){
+            if(isLoggedIn())
+                redirect('files/upload');
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 // Process form
 
@@ -100,6 +102,9 @@
          *  User login
          */
         public function login(){
+            if(isLoggedIn())
+                redirect('files/upload');
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
@@ -130,7 +135,7 @@
 
                     if($loggedInUser){
                         $loggedInUser = (array)$loggedInUser;
-                        $loggedInUser['storageId'] = $this->userStorage->getStorageIdByUserId($loggedInUser['id']);
+                        $loggedInUser['storageId'] = $this->userStorageModel->getStorageByUserId($loggedInUser['id'])->id;
                         
                         // Create user session
                         $this->createUserSession($loggedInUser);
@@ -155,6 +160,31 @@
                 $this->view('users/login', $data);
             }
         }
+
+        /**
+         *  User Storage
+         */
+        public function storage($storageId, $pageNo = 1){
+            if($storageId != $_SESSION['user_storage_id'])
+                redirect('users/storage/' . $_SESSION['user_storage_id']);
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST')
+            {
+
+            }else{
+                $start = ($pageNo - 1) * 10;
+                
+                $storage = $this->userStorageModel->getStorageByUserId($_SESSION['user_id']);
+
+                $result = $this->fileInfoModel->getUserFilesByStorageId($storage->id, [$start, 10]);
+
+                $result['page_no'] = $pageNo;
+                $result['used_size'] = formatBytes($storage->used_size);
+                $result['file_count'] = $storage->file_count;
+                $this->view('users/storage', $result);
+            }
+        }
+        
 
         /**
          *  Create user session and redirect to index page

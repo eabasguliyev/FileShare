@@ -22,8 +22,7 @@
 
     // App Settings
     // Sizes in Byte
-    define("FREE_STORAGE_SIZE", '671088640'); // 5 GB
-    // define("FREE_FILE_SIZE", '157286400'); // 150MB
+    define("FREE_STORAGE_SIZE", '21474836480'); // 20 GB
     define("FREE_FILE_SIZE", '2147483648'); // 2GB
 
     // Files Root Directory

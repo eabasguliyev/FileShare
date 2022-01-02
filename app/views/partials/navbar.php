@@ -20,7 +20,7 @@
                 </li>
                 <?php if(isLoggedIn()): ?>
                 <li class="nav-item">
-                    <a href="<?= URLROOT ?>/users/profile/<?= $_SESSION['user_id']?>" class="nav-link text-white">
+                    <a href="<?= URLROOT ?>/users/storage/<?= $_SESSION['user_storage_id']?>" class="nav-link text-white">
                         <?= $_SESSION['user_name'] ?>
                     </a>
                 </li>
