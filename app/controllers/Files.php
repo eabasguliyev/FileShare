@@ -247,7 +247,11 @@
                 }
 
                 if($_POST['isPrivate'] == 'true'){
-                    if(strlen($_POST['password']) < 4)
+                    $_POST['password'] = trim($_POST['password']);
+
+                    $l = strlen($_POST['password']);
+
+                    if($l != 0 && $l < 4)
                     {
                         $data['errors']['password'] = 'Password must contain at least 4 characters'; 
                     }
@@ -265,7 +269,7 @@
                         ])) ajaxResponse(406, 'Something went wrong');
                         
                         $filePath = SERVERPUBLICROOT . '\\' . $rec->path . '\\' . $rec->file_name;
-                        
+
                         FileHelper::renameFile($filePath,$_POST['filename']);
 
                         $data = [
@@ -276,7 +280,16 @@
                         if($_POST['isPrivate'] == 'true')
                         {
                             $data['status'] = FileHelper::FILE_ATTR_PRIVATE;
-                            $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                            if(($rec->fileinfo_status == FileHelper::FILE_ATTR_PRIVATE || 
+                                $rec->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC) 
+                                && !empty($_POST['password'])){
+                                $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                                $data['passStatus'] = 'change';
+                            }else if($rec->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC
+                             && empty($_POST['password'])){
+                                $data['errors']['password'] = 'Password must contain at least 4 characters'; 
+                                ajaxResponse(406, $data);
+                            }
                         }else{
                             $data['status'] = FileHelper::FILE_ATTR_PUBLIC;
                             $data['password'] = '';

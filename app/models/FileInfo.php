@@ -277,12 +277,19 @@
         }
 
         public function update($data){
-            $sql = "UPDATE `fileinfo` SET `status` = :status, `description` = :desc, `password` = :pass WHERE `id` = :id";
+            $stat = (isset($data['passStatus']) && $data['passStatus'] == 'change') 
+            || $data['status'] == FileHelper::FILE_ATTR_PUBLIC;
+
+            $sql = "UPDATE `fileinfo` SET `status` = :status, `description` = :desc";
+            $sql .= $stat ? ", `password` = :pass" : '';
+            $sql .= " WHERE `id` = :id";
 
             $this->db->query($sql);
             $this->db->bind(':status', $data['status']);
             $this->db->bind(':desc', $data['description']);
-            $this->db->bind(':pass', $data['password']);
+
+            if($stat)
+                $this->db->bind(':pass', $data['password']);
             $this->db->bind(':id', $data['id']);
 
             return $this->db->execute();
