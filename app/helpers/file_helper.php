@@ -220,4 +220,8 @@
 
             return $path;
         }
+
+        public static function renameFile($path, $newName){
+            rename($path, dirname($path) . '\\' . $newName);
+        }
     }

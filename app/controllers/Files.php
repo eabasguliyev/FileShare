@@ -75,7 +75,7 @@
                     'size' => $userFile['size'],
                     'password' => '',
                     'description' => $_POST['description'],
-                    'status' => 0,
+                    'status' => FileHelper::FILE_ATTR_PUBLIC,
                 ];
 
                 $file['type'] = FileHelper::mimeToExt($file['type']);
@@ -88,9 +88,8 @@
 
                     if($file['size'] > FREE_FILE_SIZE)
                     {
-                        http_response_code(406);
-                        echo 'File size is too large. File size must be max ' . formatBytes(FREE_FILE_SIZE);
-                        return;
+                        ajaxResponse(406, 'File size is too large. File size must be max '
+                                     . formatBytes(FREE_FILE_SIZE));
                     }
                 }
 
@@ -118,10 +117,12 @@
                 if($id = $this->fileModel->uploadFile($file))
                 {
                     // File uploaded successfully
-                    $this->userStorageModel->updateFileCount($_SESSION['user_storage_id'], '1');
-                    $this->userStorageModel->updateUsedSize($_SESSION['user_storage_id'], $file['size']);
+                    if(isLoggedIn()){
+                        $this->userStorageModel->updateFileCount($_SESSION['user_storage_id'], '1');
+                        $this->userStorageModel->updateUsedSize($_SESSION['user_storage_id'], $file['size']);
+                    }
                     // Print file info id
-                    echo $id;
+                    ajaxResponse(200, $id);
                 }else die("Something went wrong!");
             }else{
                 $this->view('files/upload');
@@ -208,6 +209,9 @@
 
         /** Delete file */
         public function delete($fileId){
+            if(!isLoggedIn())
+                redirect('users/login');
+        
             if($_SERVER['REQUEST_METHOD'] == 'GET'){
                 $file = $this->fileModel->getFileById($fileId);
 
@@ -225,4 +229,85 @@
                 }else die("File is not found");
             }
         }
+
+        /**
+         *  Edit File
+         */
+         public function edit($fileInfoId){
+            if(!isLoggedIn())
+                redirect('users/login');
+
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $data['errors'] = [];
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+                if(empty($_POST['filename'])){
+                    $data['errors']['filename'] = 'File name can not be empty';
+                }
+
+                if($_POST['isPrivate'] == 'true'){
+                    if(strlen($_POST['password']) < 4)
+                    {
+                        $data['errors']['password'] = 'Password must contain at least 4 characters'; 
+                    }
+                }
+
+                if(count($data['errors']) > 0){
+                    ajaxResponse(406, $data);
+                }else{
+                    $rec = $this->fileInfoModel->getFileInfoById($fileInfoId);
+
+                    if($_SESSION['user_storage_id'] == $rec->storage_id){
+                        if(!$this->fileModel->update([
+                            'id' => $rec->file_id,
+                            'filename' => $_POST['filename'],
+                        ])) ajaxResponse(406, 'Something went wrong');
+                        
+                        $filePath = SERVERPUBLICROOT . '\\' . $rec->path . '\\' . $rec->file_name;
+                        
+                        FileHelper::renameFile($filePath,$_POST['filename']);
+
+                        $data = [
+                            'id' => $fileInfoId,
+                            'description' => $_POST['description'],
+                        ];
+
+                        if($_POST['isPrivate'] == 'true')
+                        {
+                            $data['status'] = FileHelper::FILE_ATTR_PRIVATE;
+                            $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                        }else{
+                            $data['status'] = FileHelper::FILE_ATTR_PUBLIC;
+                            $data['password'] = '';
+                        }
+
+                        if($this->fileInfoModel->update($data))
+                            ajaxResponse(200, 'Succesfully edited');
+                        else ajaxResponse(406, 'Something went wrong');
+                    }else redirect('users/login');
+                }
+            }
+         }
+         
+         /** Get file info */
+         public function getFileInfo($fileInfoId){
+            if(!isLoggedIn())
+                redirect('users/login');
+
+            if($_SERVER['REQUEST_METHOD'] == 'GET'){
+                $rec = $this->fileInfoModel->getFileInfoById($fileInfoId);
+
+                $rec = (array)$rec;
+
+                // delete important values
+                unset($rec['password']);
+                unset($rec['fileinfo_password']);
+                unset($rec['path']);
+
+                if($rec){
+                    echo json_encode($rec);
+                }else die("File not found");
+            }
+         }
     }

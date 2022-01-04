@@ -71,4 +71,14 @@
 
             return  $this->db->execute() ? $this->db->single() : false;
         }
+
+        public function update($data){
+            $sql = "UPDATE `file` SET `name` = :name WHERE `id` = :id";
+
+            $this->db->query($sql);
+            $this->db->bind(':name', $data['filename']);
+            $this->db->bind(':id', $data['id']);
+
+            return $this->db->execute();
+        }
     }

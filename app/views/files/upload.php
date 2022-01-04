@@ -152,11 +152,13 @@
                     progressBar.style.backgroundColor = '#157347';
 
                     if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        const id = JSON.parse(xhr.responseText);
                         setTimeout(() => {
-                            location.href = `<?= URLROOT?>/files/success/${xhr.responseText}`;
+                            location.href = `<?= URLROOT?>/files/success/${id}`;
                         }, 1000);   
                     }else if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 406){
-                        openModal('Info', xhr.responseText);
+                        const msg = JSON.parse(xhr.responseText);
+                        openModal('Info', msg);
                         isStarted = false;
                     }
                 };

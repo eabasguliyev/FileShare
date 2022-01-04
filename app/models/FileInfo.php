@@ -116,6 +116,7 @@
         public function getFileInfoById($id){
             $sql = "SELECT *,`fileinfo`.`id` AS `fileinfo_id`,
                              `file`.`created_at` AS `file_created_at`,
+                             `file`.`id` AS `file_id`,
                               `file`.`name` AS `file_name`,
                               `fileinfo`.`password` AS `fileinfo_password`,
                               `fileinfo`.`status` AS `fileinfo_status`
@@ -273,5 +274,17 @@
                 'files' => $files,
                 'page_count' => $pageCount,
             ];
+        }
+
+        public function update($data){
+            $sql = "UPDATE `fileinfo` SET `status` = :status, `description` = :desc, `password` = :pass WHERE `id` = :id";
+
+            $this->db->query($sql);
+            $this->db->bind(':status', $data['status']);
+            $this->db->bind(':desc', $data['description']);
+            $this->db->bind(':pass', $data['password']);
+            $this->db->bind(':id', $data['id']);
+
+            return $this->db->execute();
         }
     }
