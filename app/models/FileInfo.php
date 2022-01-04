@@ -7,12 +7,18 @@
         public function getFileInfosByMode(array $range, int $mode){
             $range[1] -= $range[0];
 
-            $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo` WHERE `fileinfo`.`status` = :status AND `fileinfo`.`storage_id` IS NULL");
+            $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo` WHERE `fileinfo`.`status` = :status");
             $this->db->bind(':status', $mode);
             $this->db->execute();
-            $guestFileCount = $this->db->single()->file_count;
+            $totalFile = $this->db->single()->file_count;
 
-            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, `file`.`name` as `file_name`, `fileinfo`.`id` as `fileinfo_id`, `file`.`id` as `file_id` FROM `fileinfo` INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` AND `fileinfo`.`storage_id` IS NULL WHERE `fileinfo`.`status` = :status ORDER BY `file`.`created_at` DESC LIMIT :start, :count ;";
+            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, 
+                            `file`.`name` as `file_name`, 
+                            `fileinfo`.`id` as `fileinfo_id`, 
+                            `file`.`id` as `file_id` FROM `fileinfo` 
+                            INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` 
+                            WHERE `fileinfo`.`status` = :status ORDER BY `file`.`created_at` 
+                            DESC LIMIT :start, :count";
 
             // Creates a query
             $this->db->query($sql);
@@ -24,38 +30,81 @@
 
             // Execute query
             $this->db->execute();
-            $resultcount = $this->db->rowCount();
+            // $resultcount = $this->db->rowCount();
 
-            $dataSet1 = $this->db->resultSet();
+            $dataSet = $this->db->resultSet();
 
-            $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo` WHERE `fileinfo`.`status` = :status AND `fileinfo`.`storage_id` IS NOT NULL");
-            $this->db->bind(':status', $mode);
-            $this->db->execute();
-            $registeredFileCount = $this->db->single()->file_count;
+            $pageCount = 0;
+            if($this->db->rowCount() != 0)
+            {
+                $pageCount = ceil($totalFile / $range[1]);
+            }
+            return [
+                'files' => $dataSet,
+                'total_count' => $totalFile, 
+                'page_count' => $pageCount 
+            ];
+        }
+
+        public function getAllFileInfoUserDetailById($fileInfoIdArr){
+            $sql = "SELECT *, `file`.`created_at` AS `file_created_at`,
+                                         `file`.`name` AS `file_name`,
+                                          `fileinfo`.`id` AS `fileinfo_id`, 
+                                          `file`.`id` AS `file_id` FROM `fileinfo` 
+                                          INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                                          INNER JOIN `userstorage` ON `userstorage`.`id` = `fileinfo`.`storage_id` 
+                                        INNER JOIN `user` ON `userstorage`.`user_id` = `user`.`id` WHERE `fileinfo`.`id` IN (";
+            $sql .= implode(",", $fileInfoIdArr) . ")";
             
-            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, `file`.`name` as `file_name`, `fileinfo`.`id` as `fileinfo_id`, `file`.`id` as `file_id` FROM `fileinfo` INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` INNER JOIN `userstorage` ON `userstorage`.`id` = `fileinfo`.`storage_id` INNER JOIN `user` ON `userstorage`.`user_id` = `user`.`id` WHERE `fileinfo`.`status` = :status ORDER BY `file`.`created_at` DESC LIMIT :start, :count;";
+            $this->db->query($sql);
+            $this->db->execute();
+            return $this->db->resultSet();
+        }
+
+        public function getFileInfosByName(string $search, array $range, int $mode){
+            $range[1] -= $range[0];
+            $sql = "SELECT COUNT(*) as file_count FROM `fileinfo`
+                                INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                                 WHERE `fileinfo`.`status` = :status  
+                                    AND `file`.`name` LIKE CONCAT('%', :search, '%')";
 
             $this->db->query($sql);
-
             $this->db->bind(':status', $mode);
+            $this->db->bind(':search', $search);
+            $this->db->execute();
+            $totalFile = $this->db->single()->file_count;
+
+            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, 
+                            `file`.`name` as `file_name`, 
+                            `fileinfo`.`id` as `fileinfo_id`, 
+                            `file`.`id` as `file_id` FROM `fileinfo` 
+                            INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` 
+                            WHERE `fileinfo`.`status` = :status AND `file`.`name` LIKE CONCAT('%', :search, '%') ORDER BY `file`.`created_at` 
+                            DESC LIMIT :start, :count";
+
+            // Creates a query
+            $this->db->query($sql);
+
+            // Bind values
+            $this->db->bind(':status', $mode);
+            $this->db->bind(':search', $search);
             $this->db->bind(':start', $range[0]);
             $this->db->bind(':count', $range[1]);
 
+            // Execute query
             $this->db->execute();
-            $resultcount += $this->db->rowCount();
+            // $resultcount = $this->db->rowCount();
 
-            $dataSet2 = $this->db->resultSet();
-
-            $total = $guestFileCount + $registeredFileCount;
+            $dataSet = $this->db->resultSet();
 
             $pageCount = 0;
-            if($resultcount != 0)
+            if($this->db->rowCount() != 0)
             {
-                $pageCount = ceil($total / $resultcount);
+                $pageCount = ceil($totalFile / $range[1]);
             }
             return [
-                'files' => array_merge($dataSet1, $dataSet2),
-                'total_count' => $total, 
+                'files' => $dataSet,
+                'total_count' => $totalFile, 
                 'page_count' => $pageCount 
             ];
         }
@@ -111,19 +160,104 @@
             return false;
         }
 
-        public function getUserFilesByStorageId($storageId, array $range){
-            $sql = "SELECT COUNT(*) AS file_count FROM `fileinfo` WHERE `storage_id` = :storage_id";
+
+        public function getUserFilesByStorageId($storageId, array $range, array $modes){
+            $modeArgsStr = implode(',', array_map(function($key){
+                                return ':' . $key . '_arg';
+                            }, array_keys($modes)));
+
+            $sql = "SELECT COUNT(*) AS file_count FROM `fileinfo` WHERE `storage_id` = :storage_id
+                                             AND `fileinfo`.`status` IN (" . $modeArgsStr . ")";
             $this->db->query($sql);
             $this->db->bind(':storage_id', $storageId);
+            for ($i=0, $l = count($modes); $i < $l; $i++) { 
+                $this->db->bind(':' . $i . '_arg', $modes[$i]);
+             }
+
             $this->db->execute();
             $filesCount = $this->db->single()->file_count;
 
-            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, `file`.`name` as `file_name`, `fileinfo`.`id` as `fileinfo_id`, `file`.`id` as `file_id` FROM `fileinfo` INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` WHERE `storage_id` = :storage_id ORDER BY `file`.`created_at` DESC LIMIT :start, :count;";
+            $sql = "SELECT *, `file`.`created_at` AS `file_created_at`, 
+                            `file`.`name` AS `file_name`, 
+                            `fileinfo`.`id` AS `fileinfo_id`,
+                             `file`.`id` AS `file_id` 
+                             FROM `fileinfo`
+                              INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                               WHERE `storage_id` = :storage_id AND `fileinfo`.`status` IN ("
+                               . $modeArgsStr
+                               .  
+                               ") ORDER BY `file`.`created_at` 
+                               DESC LIMIT :start, :count;";
 
             $this->db->query($sql);
             $this->db->bind(':storage_id', $storageId);
             $this->db->bind(':start', $range[0]);
             $this->db->bind(':count', $range[1]);
+
+            for ($i=0, $l = count($modes); $i < $l; $i++) { 
+                $this->db->bind(':' . $i . '_arg', $modes[$i]);
+             }
+
+            $this->db->execute();
+
+            $files = $this->db->resultSet();
+            $resultCount = $this->db->rowCount();
+            $pageCount = 0;
+
+            if($resultCount != 0){
+                $pageCount = ceil($filesCount / $range[1]);
+            }
+            
+            return [
+                'files_count' => $filesCount,
+                'files' => $files,
+                'page_count' => $pageCount,
+            ];
+        }
+
+        public function getUserFilesByName($storageId, $search, array $range, array $modes){
+            $modeArgsStr = implode(',', array_map(function($key){
+                return ':' . $key . '_arg';
+            }, array_keys($modes)));
+
+            $sql = "SELECT COUNT(*) AS file_count FROM `fileinfo` 
+                                INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                                WHERE `storage_id` = :storage_id AND
+                                 `fileinfo`.`status` IN (" . $modeArgsStr . ") AND `file`.`name` 
+                                 LIKE CONCAT('%', :search, '%')";
+
+            $this->db->query($sql);
+            $this->db->bind(':storage_id', $storageId);
+            $this->db->bind(':search', $search);
+
+            for ($i=0, $l = count($modes); $i < $l; $i++) { 
+                $this->db->bind(':' . $i . '_arg', $modes[$i]);
+            }
+
+            $this->db->execute();
+            $filesCount = $this->db->single()->file_count;
+
+            $sql = "SELECT *, `file`.`created_at` AS `file_created_at`,
+                             `file`.`name` AS `file_name`, 
+                             `fileinfo`.`id` AS `fileinfo_id`, 
+                             `file`.`id` AS `file_id` FROM `fileinfo`
+                              INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                               WHERE `storage_id` = :storage_id AND `fileinfo`.`status` IN ( " 
+                               . $modeArgsStr
+                               .  ") AND `file`.`name` LIKE CONCAT('%', :search, '%') 
+                               ORDER BY `file`.`created_at` DESC LIMIT :start, :count;";
+
+
+            $this->db->query($sql);
+            $this->db->bind(':storage_id', $storageId);
+            $this->db->bind(':search', $search);
+            $this->db->bind(':start', $range[0]);
+            $this->db->bind(':count', $range[1]);
+
+            for ($i=0, $l = count($modes); $i < $l; $i++) { 
+               $this->db->bind(':' . $i . '_arg', $modes[$i]);
+            }
+            
             $this->db->execute();
 
             $files = $this->db->resultSet();

@@ -1,6 +1,13 @@
 <?php require_once APPROOT . '/views/partials/header.php'?>
     <div class="container">
         <div class="d-flex flex-column justify-content-center align-items-center w-75 mx-auto">
+            <h1 class="fs-3 my-4">Uploaded Files</h1>
+            <form method="POST" class="w-100">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Enter file name" value="<?= isset($data['search']) ? $data['search'] : ''?>">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                </div>
+            </form>
             <p id="result-count" class="mt-4">About <?= $data['total_count'] ?> result(s)</p>
             <table class="table table-hover mt-2">
                 <thead>

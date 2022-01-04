@@ -43,14 +43,15 @@
         }
 
         /**
-         *  Delete a file record
+         *  Delete a file record (only set fileinfo status to 3 (FILE_ATTR_REMOVE) )
          *  @param int $fileId file id
          *  @return bool return false if any execution fails, otherwise false 
          */
         public function delete($fileId){
-            $sql = "DELETE FROM `file` WHERE `id` = :file_id";
+            $sql = "UPDATE `fileinfo` SET `status` = :status  WHERE `file_id` = :file_id";
             $this->db->query($sql);
             $this->db->bind(':file_id', $fileId);
+            $this->db->bind(':status', FileHelper::FILE_ATTR_REMOVE);
             
             return $this->db->execute();
         }

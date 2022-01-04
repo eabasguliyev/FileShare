@@ -5,6 +5,12 @@
             <div class="alert alert-primary w-100 text-center mt-2" role="alert">
                 <p class="lead d-inline">Used: </p><span><?= $data['used_size'] ?> of <?= formatBytes(FREE_STORAGE_SIZE) ?> / <?= $data['file_count'] ?> file(s)</span>
             </div>
+            <form method="POST" class="w-100">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Enter file name" value="<?= isset($data['search']) ? $data['search'] : ''?>">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                </div>
+            </form>
             <p id="result-count" class="mt-4">About <?= $data['files_count'] ?> result(s)</p>
             <table class="table table-hover mt-2">
                 <thead>
@@ -24,7 +30,7 @@
                             <td><?= formatBytes($file->size) ?></td>
                             <td><?= $file->download_count ?> times</td>
                             <td>
-                                <a href="" class="me-2"><i class="bi bi-pencil-square"></i></a>
+                                <a href="javascript:void(0);" class="me-2" onclick="openModal()"><i class="bi bi-pencil-square"></i></a>
                                 <a href="<?= URLROOT . '/files/delete/' . $file->file_id ?>"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
@@ -48,4 +54,41 @@
             </nav>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script>
+        let myModal = null;
+
+        $(() =>
+        {
+            myModal = new bootstrap.Modal($('#myModal'), {
+                keyboard: false
+            });
+        });
+
+        function openModal(){
+            
+            myModal.show();
+        }
+    </script>
 <?php require_once APPROOT . '/views/partials/footer.php'?>

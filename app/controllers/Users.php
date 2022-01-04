@@ -168,21 +168,36 @@
             if($storageId != $_SESSION['user_storage_id'])
                 redirect('users/storage/' . $_SESSION['user_storage_id']);
 
+            $storage = $this->userStorageModel->getStorageByUserId($_SESSION['user_id']);
+            
             if($_SERVER['REQUEST_METHOD'] == 'POST')
             {
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
+                $start = ($pageNo - 1) * 10;
+                
+                $result = $this->fileInfoModel->getUserFilesByName($storage->id, $_POST['search'], [$start, 10], [FileHelper::FILE_ATTR_PRIVATE, FileHelper::FILE_ATTR_PUBLIC]);
+
+                //usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
+                $idArr = ModelHelper::getAllUserFileId($result['files']);
+
+                if(count($idArr) > 0){
+                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
+                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
+                }
+
+                $result['search'] = $_POST['search'];
             }else{
                 $start = ($pageNo - 1) * 10;
                 
-                $storage = $this->userStorageModel->getStorageByUserId($_SESSION['user_id']);
+                $result = $this->fileInfoModel->getUserFilesByStorageId($storage->id, [$start, 10], [FileHelper::FILE_ATTR_PRIVATE, FileHelper::FILE_ATTR_PUBLIC]);
+            }
 
-                $result = $this->fileInfoModel->getUserFilesByStorageId($storage->id, [$start, 10]);
-
-                $result['page_no'] = $pageNo;
+            $result['page_no'] = $pageNo;
                 $result['used_size'] = formatBytes($storage->used_size);
                 $result['file_count'] = $storage->file_count;
+                
                 $this->view('users/storage', $result);
-            }
         }
         
 

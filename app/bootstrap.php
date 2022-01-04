@@ -9,6 +9,7 @@
     require_once 'helpers/validate_helper.php';
     require_once 'helpers/file_helper.php';
     require_once 'helpers/sort_helper.php';
+    require_once 'helpers/model_helper.php';
     require_once 'helpers/helper_functions.php';
 
     // Autoload Core Libraries

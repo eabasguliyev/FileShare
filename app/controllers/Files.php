@@ -24,18 +24,37 @@
          */
         public function all($pageNo = 1){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
+                $start = ($pageNo - 1) * 10;
+                $result = $this->fileInfoModel->getFileInfosByName($_POST['search'], [$start, $start + 10], FileHelper::FILE_ATTR_PUBLIC);
+
+                //usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
+                $idArr = ModelHelper::getAllUserFileId($result['files']);
+
+                if(count($idArr) > 0){
+                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
+                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
+                }
+
+                $result['search'] = $_POST['search'];
             }else{
                 // Load view
                 $start = ($pageNo - 1) * 10;
                 $result = $this->fileInfoModel->getFileInfosByMode([$start, $start + 10], FileHelper::FILE_ATTR_PUBLIC);
 
-                usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
+                //usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
+                $idArr = ModelHelper::getAllUserFileId($result['files']);
 
-                $result['page_no'] = $pageNo;
-
-                $this->view('files/all', $result);
+                if(count($idArr) > 0){
+                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
+                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
+                }
+                
             }
+            
+            $result['page_no'] = $pageNo;
+            $this->view('files/all', $result);
         }
 
         /**
