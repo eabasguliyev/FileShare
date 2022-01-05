@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a href="<?= URLROOT ?>" class="navbar-brand fs-1">
+        <a href="<?= URLROOT ?>/admins/index" class="navbar-brand fs-1">
             Admin Panel
         </a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navmenu">

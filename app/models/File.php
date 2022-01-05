@@ -43,11 +43,11 @@
         }
 
         /**
-         *  Delete a file record (only set fileinfo status to 3 (FILE_ATTR_REMOVE) )
+         *  Change status of file record (only set fileinfo status to 3 (FILE_ATTR_REMOVE) )
          *  @param int $fileId file id
          *  @return bool return false if any execution fails, otherwise false 
          */
-        public function delete($fileId){
+        public function changeFileStatusToRemove($fileId){
             $sql = "UPDATE `fileinfo` SET `status` = :status  WHERE `file_id` = :file_id";
             $this->db->query($sql);
             $this->db->bind(':file_id', $fileId);
@@ -79,6 +79,19 @@
             $this->db->bind(':name', $data['filename']);
             $this->db->bind(':id', $data['id']);
 
+            return $this->db->execute();
+        }
+
+        /**
+         *  Delete a file record
+         *  @param int $fileId file id
+         *  @return bool return false if any execution fails, otherwise false 
+         */
+        public function delete($fileId){
+            $sql = "DELETE FROM `file` WHERE `id` = :file_id";
+            $this->db->query($sql);
+            $this->db->bind(':file_id', $fileId);
+            
             return $this->db->execute();
         }
     }

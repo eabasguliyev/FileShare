@@ -145,6 +145,9 @@
 
                     progressBar.style.width = percent.toFixed(2) + '%';
                     progressBar.textContent = percent.toFixed(2) + '%';
+
+                    if(!isStarted)
+                        xhr.abort();
                 });
 
                 xhr.onreadystatechange = function () {

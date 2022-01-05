@@ -50,6 +50,10 @@ body::before {
   transition: width 0.25s;
 }
 
+a.disabled {
+  pointer-events: none;
+}
+
 @media screen and (max-width: 992px) {
   .select-lang {
     width: 80px;

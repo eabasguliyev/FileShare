@@ -9,7 +9,13 @@
     <link rel="stylesheet" href="<?= URLROOT ?>/css/style.css">
     <link rel="shortcut icon" href="<?= URLROOT ?>/favicon.ico" type="image/x-icon">
     <link rel="icon" href="<?= URLROOT ?>/favicon.ico" type="image/x-icon">
-    <title><?= SITENAME ?></title>
+    <title><?= SITENAME . (isAdminLoggedIn() ? ' Admin Panel' : '') ?></title>
 </head>
 <body>
-    <?php require_once APPROOT . '/views/partials/navbar.php'; ?>
+    <?php 
+        if(isAdminLoggedIn()){
+            require_once APPROOT . '/views/admins/partials/navbar.php'; 
+        }else{
+            require_once APPROOT . '/views/partials/navbar.php'; 
+        }
+    ?>

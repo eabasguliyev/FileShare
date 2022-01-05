@@ -182,7 +182,7 @@
                         ];
     
                         $this->view('files/private', $data);
-                    }else{
+                    }else if($fileInfo->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC){
                         // Public File
 
                         $data = [
@@ -190,7 +190,7 @@
                         ];
                         
                         $this->view('files/info', $data);
-                    }
+                    }else die("File deleted");
                 }else die("File Not Found");
             }
         }
@@ -219,14 +219,18 @@
 
                 if($file){
                     if($_SESSION['user_storage_id'] == $file->storage_id ){
-                        if($this->fileModel->delete($fileId))
+                        if($file->status == FileHelper::FILE_ATTR_REMOVE)
+                            die("File already deleted");
+                        
+                        if($this->fileModel->changeFileStatusToRemove($fileId))
                         {
                             $this->userStorageModel->updateUsedSize($file->storage_id, '-' . $file->size);                            
                             $this->userStorageModel->updateFileCount($file->storage_id, -1);
 
                             redirect('users/storage/' . $_SESSION['user_storage_id']);
                         }
-                        else die('Something went wrong');
+                        
+                        die('Something went wrong');
                     }else die("You don't have access for this operation");
                 }else die("File is not found");
             }

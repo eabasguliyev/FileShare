@@ -1,9 +1,50 @@
 <?php
     class FileInfo extends Model{
         /**
-         *  Get all file info
+         *  Get file info
          *  @return array files and total_count
          */
+        public function getAllFileInfo(array $range){
+            $range[1] -= $range[0];
+
+            $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo`");
+            $this->db->execute();
+            $totalFile = $this->db->single()->file_count;
+
+            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, 
+                            `file`.`name` as `file_name`, 
+                            `fileinfo`.`id` as `fileinfo_id`, 
+                            `fileinfo`.`status` as `fileinfo_status`, 
+                            `file`.`id` as `file_id` FROM `fileinfo` 
+                            INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` 
+                            ORDER BY `file`.`created_at` 
+                            DESC LIMIT :start, :count";
+
+            // Creates a query
+            $this->db->query($sql);
+
+            // Bind values
+            $this->db->bind(':start', $range[0]);
+            $this->db->bind(':count', $range[1]);
+
+            // Execute query
+            $this->db->execute();
+            // $resultcount = $this->db->rowCount();
+
+            $dataSet = $this->db->resultSet();
+
+            $pageCount = 0;
+            if($this->db->rowCount() != 0)
+            {
+                $pageCount = ceil($totalFile / $range[1]);
+            }
+            return [
+                'files' => $dataSet,
+                'total_count' => $totalFile, 
+                'page_count' => $pageCount 
+            ];
+        }
+
         public function getFileInfosByMode(array $range, int $mode){
             $range[1] -= $range[0];
 
@@ -50,6 +91,7 @@
             $sql = "SELECT *, `file`.`created_at` AS `file_created_at`,
                                          `file`.`name` AS `file_name`,
                                           `fileinfo`.`id` AS `fileinfo_id`, 
+                                          `fileinfo`.`status` as `fileinfo_status`, 
                                           `file`.`id` AS `file_id` FROM `fileinfo` 
                                           INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
                                           INNER JOIN `userstorage` ON `userstorage`.`id` = `fileinfo`.`storage_id` 
@@ -292,6 +334,18 @@
                 $this->db->bind(':pass', $data['password']);
             $this->db->bind(':id', $data['id']);
 
+            return $this->db->execute();
+        }
+
+        public function changeFileStatus($data){
+            $sql = "UPDATE `fileinfo` SET `status` = :status, `old_status` = :old_status 
+                            WHERE `id` = :id";
+
+            $this->db->query($sql);
+            $this->db->bind(':status', $data['status']);
+            $this->db->bind(':old_status', $data['old_status']);
+            $this->db->bind(':id', $data['id']);
+            
             return $this->db->execute();
         }
     }

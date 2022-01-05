@@ -7,6 +7,7 @@
         const FILE_ATTR_PRIVATE = 1;
         const FILE_ATTR_INACTIVE = 2;
         const FILE_ATTR_REMOVE = 3;
+        const FILE_ATTR_ACTIVE = 4;
 
         /**
          *  Convert mime type to file extension
@@ -223,5 +224,12 @@
 
         public static function renameFile($path, $newName){
             rename($path, dirname($path) . '\\' . $newName);
+        }
+
+        /** 
+         * Delete a file
+         */
+        public static function deleteFile($path, $fileName){
+            unlink($path . '\\' . $fileName);
         }
     }
