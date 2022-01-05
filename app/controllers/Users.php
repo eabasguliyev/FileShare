@@ -9,6 +9,7 @@
          */
         public function __construct()
         {
+            startSession('user');
             $this->userModel = $this->model('User');
             $this->userStorageModel = $this->model('UserStorage');
             $this->fileInfoModel = $this->model('FileInfo');

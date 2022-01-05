@@ -4,6 +4,8 @@
 
         public function __construct()
         {
+            startSession('admin');
+
             $this->adminModel = $this->model('Admin');    
         }
 
@@ -11,7 +13,11 @@
             if(!isAdminLoggedIn())
                 redirect('admins/login');
             
-            echo 'logged in. welcome ' . $_SESSION['admin_username'];
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                
+            }else{
+                $this->view('admins/index');
+            }
         }
 
         public function login(){
@@ -66,5 +72,16 @@
             $_SESSION['admin_access_status'] = $admin->access_status;
 
             redirect('admins/index');
+        }
+
+        /**
+         *  Logout from account and redirect to login page
+         */
+        public function logout(){
+            unset($_SESSION['admin_id']);
+            unset($_SESSION['admin_username']);
+            unset($_SESSION['admin_access_status']);
+            flash('logout_success', 'You logged out.');
+            redirect('admins/login');
         }
     }

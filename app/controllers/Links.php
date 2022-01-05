@@ -3,6 +3,8 @@
         private Link $linkModel;
         public function __construct()
         {
+            startSession('user');
+
             $this->linkModel = $this->model('Link');
         }
 

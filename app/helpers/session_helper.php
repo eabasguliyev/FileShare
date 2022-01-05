@@ -1,6 +1,4 @@
 <?php
-    session_start();
-
     /**
      *  Flash message helper
      *  @param string $name key
@@ -42,4 +40,10 @@
     function isAdminLoggedIn()
     {
         return isset($_SESSION['admin_id']);
+    }
+
+    function startSession($id){
+        session_write_close();
+        session_id($id);
+        session_start();
     }

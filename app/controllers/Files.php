@@ -6,6 +6,8 @@
         
         public function __construct()
         {
+            startSession('user');
+
             $this->fileModel = $this->model('File');
             $this->fileInfoModel = $this->model('FileInfo');
             $this->userStorageModel = $this->model('UserStorage');
