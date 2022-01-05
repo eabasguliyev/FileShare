@@ -12,6 +12,7 @@
     require_once 'helpers/model_helper.php';
     require_once 'helpers/helper_functions.php';
     require_once 'helpers/ajax_helper.php';
+    require_once 'helpers/admin_helper.php';
 
     // Autoload Core Libraries
     spl_autoload_register(function($className) {

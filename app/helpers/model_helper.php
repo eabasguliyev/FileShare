@@ -1,9 +1,5 @@
 <?php
     class ModelHelper{
-        public static function prepareFiles($files){
-            
-        }
-
         public static function getAllUserFileId($fileInfoArr){
             $idArr = [];
 
