@@ -165,7 +165,10 @@
         /**
          *  User Storage
          */
-        public function storage($storageId, $pageNo = 1){
+        public function storage($storageId = null, $pageNo = 1){
+            if(!isLoggedIn())
+                redirect('users/login');
+
             if($storageId != $_SESSION['user_storage_id'])
                 redirect('users/storage/' . $_SESSION['user_storage_id']);
 

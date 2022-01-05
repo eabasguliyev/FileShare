@@ -47,7 +47,7 @@
                         <a class="page-link" href="<?= URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $i?>"><?= $i ?></a>
                     </li>
                     <?php endfor; ?>
-                    <li class="page-item <?= $data['page_no'] == $data['page_count'] ? 'disabled' : '' ?>">
+                    <li class="page-item <?= $data['page_no'] == $data['page_count'] || $data['page_count'] == 0 ? 'disabled' : '' ?>">
                         <a class="page-link" href="<?= $data['page_no'] == $data['page_count'] ? '#' : URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $data['page_no'] + 1 ?>">Next</a>
                     </li>
                 </ul>

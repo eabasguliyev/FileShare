@@ -231,5 +231,6 @@
          */
         public static function deleteFile($path, $fileName){
             unlink($path . '\\' . $fileName);
+            rmdir($path);
         }
     }

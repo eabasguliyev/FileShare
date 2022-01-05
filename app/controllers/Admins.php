@@ -166,8 +166,11 @@
                 if($rec){
                     $this->fileModel->delete($fileId);
                     FileHelper::deleteFile(SERVERPUBLICROOT . '\\' . $rec->path, $rec->name);
-                    $this->userStorageModel->updateUsedSize($rec->storage_id, '-' . $rec->size);                            
-                    $this->userStorageModel->updateFileCount($rec->storage_id, -1);
+                    
+                    if($rec->status != FileHelper::FILE_ATTR_REMOVE){
+                        $this->userStorageModel->updateUsedSize($rec->storage_id, '-' . $rec->size);                            
+                        $this->userStorageModel->updateFileCount($rec->storage_id, -1);
+                    }
 
                     flash('file_remove_success', $rec->name . ' deleted');
                     redirect('admins/allfiles');
