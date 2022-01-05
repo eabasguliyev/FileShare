@@ -65,9 +65,9 @@
                 <div class="modal-body">
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="filename" placeholder="File Name">
-                        <label for="name">File Name</label>
+                        <label for="filename">File Name</label>
                         <div class="invalid-feedback" id="filename-fb">
-                            Please provide a valid city.
+                            
                         </div>
                     </div>
                     <div class="form-floating mb-3">
@@ -84,7 +84,7 @@
                         <input type="password" class="form-control" id="password" placeholder="Password">
                         <label for="password">New Password</label>
                         <div class="invalid-feedback" id="password-fb">
-                            Please provide a valid city.
+                           
                         </div>
                     </div>
                 </div>

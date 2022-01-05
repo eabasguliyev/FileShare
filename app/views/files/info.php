@@ -28,7 +28,7 @@
                         <p class="lead fs-6 d-inline">Description: </p><span><?= $data['file']->description ?></span>
                     </div>
                     <div class="col-6">
-                        <a href="#" class="text-danger float-end me-1">Report this file</a>
+                        <a href="javascript:void(0);" class="text-danger float-end me-1" onclick="myModal.show()">Report this file</a>
                     </div>
                 </div>
                 <div class="row mt-5">
@@ -49,12 +49,84 @@
             </div>
         </div>
     </div>
+    <!-- Modals -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Report File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="name" placeholder="Name">
+                        <label for="name">Name</label>
+                        <div class="invalid-feedback" id="name-fb">
+                            
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="Email">
+                        <label for="email">Email</label>
+                        <div class="invalid-feedback" id="email-fb">
+                            
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" placeholder="Write description" id="description" style="height: 100px"></textarea>
+                        <label for="description">Description</label>
+                        <div class="invalid-feedback" id="description-fb">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="saveBtn" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="infoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="header-title">Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="body-text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="<?= URLROOT ?>/js/functions.js"></script>
     <script>
+        let myModal = null;
+        let infoModal = null;
+        let nameEl = null;
+        let emailEl = null;
+        let descriptionEl = null;
+
+
         $(() =>{
+            nameEl = $('#name');
+            emailEl = $('#email');
+            descriptionEl = $('#description');
+            const fileInfoId = <?= $data['file']->fileinfo_id ?>;
             const linkCopyEl = $('#link-copy');
             const downloadLinkEl = $('#download-link');
+            myModal = new bootstrap.Modal($('#myModal'), {
+                keyboard: false
+            });
+            infoModal = new bootstrap.Modal($('#infoModal'), {
+                keyboard: false
+            });
+
 
             linkCopyEl.on('click', function(){
                 if(linkCopyEl.hasClass('bi-clipboard')){
@@ -83,6 +155,40 @@
                     $('#download-card').removeClass('d-none');
                 });
             });
+
+            $('#saveBtn').on('click', {
+                fileInfoId
+            }, save);
         });
+
+        function save(e){
+            // clean up
+            nameEl.removeClass('is-invalid')
+            emailEl.removeClass('is-invalid')
+            descriptionEl.removeClass('is-invalid')
+            
+            // send request to server
+            const arg = e.data;
+            $.post(`<?= URLROOT ?>/reports/report/`, {
+                id: arg.fileInfoId,
+                name: nameEl.val(),
+                email: emailEl.val(),
+                description: descriptionEl.val(),
+            }).done(e => {
+                $('.body-text').html(JSON.parse(e));
+                nameEl.val('');
+                emailEl.val('');
+                descriptionEl.val('');
+                myModal.hide();
+                infoModal.show();
+            }).fail(e => {
+                console.log(e.responseText);
+                const data = JSON.parse(e.responseText);
+                for (const key in data.errors) {
+                    $(`#${key}`).addClass('is-invalid');
+                    $(`#${key}-fb`).html(data.errors[key]);
+                }
+            });
+        }
     </script>
 <?php require_once APPROOT . '/views/partials/footer.php'?>

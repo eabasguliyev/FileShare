@@ -48,6 +48,17 @@
             }
         }
 
+        public function reportedfiles($pageNo = 1){
+            if(!isAdminLoggedIn())
+                redirect('admins/login');
+            
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+            }else{
+                echo 'REPORTED FILES';
+            }
+        }
+
         public function login(){
             if(isAdminLoggedIn())
                 redirect('admins/index');
