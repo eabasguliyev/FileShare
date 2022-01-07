@@ -1,0 +1,27 @@
+You must modify this values in php.ini file.
+
+upload_max_filesize=3G
+post_max_size=3G
+
+accounts:
+
+users:
+
+elgun@gmail.com
+123456
+
+abil@gmail.com
+123456
+
+common file password:
+1234
+
+admins:
+
+'full access'
+admin
+admin
+
+'read access'
+test
+test
