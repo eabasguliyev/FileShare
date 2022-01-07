@@ -22,6 +22,8 @@
             if(isLoggedIn())
                 redirect('files/upload');
 
+            $content = FileHelper::getPageContentByLang('users/register', Core::$lang);
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 // Process form
 
@@ -42,6 +44,7 @@
                         'password' => '',
                         'confirm_password' => '',
                     ],
+                    'content' => $content
                 ];
 
                 // Validate inputs
@@ -93,6 +96,7 @@
                         'password' => '',
                         'confirm_password' => '',
                     ],
+                    'content' => $content
                 ];
 
                 $this->view('users/register', $data);
@@ -105,6 +109,8 @@
         public function login(){
             if(isLoggedIn())
                 redirect('files/upload');
+            
+            $content = FileHelper::getPageContentByLang('users/login', Core::$lang);
 
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -117,6 +123,7 @@
                         'email' => '',
                         'password' => '',
                     ],
+                    'content' => $content
                 ];
 
                 // Validate inputs
@@ -156,6 +163,7 @@
                         'email' => '',
                         'password' => '',
                     ],
+                    'content' => $content
                 ];
 
                 $this->view('users/login', $data);
@@ -197,11 +205,14 @@
                 $result = $this->fileInfoModel->getUserFilesByStorageId($storage->id, [$start, 10], [FileHelper::FILE_ATTR_PRIVATE, FileHelper::FILE_ATTR_PUBLIC]);
             }
 
+            $content = FileHelper::getPageContentByLang('users/storage', Core::$lang);
+
             $result['page_no'] = $pageNo;
-                $result['used_size'] = formatBytes($storage->used_size);
-                $result['file_count'] = $storage->file_count;
-                
-                $this->view('users/storage', $result);
+            $result['used_size'] = formatBytes($storage->used_size);
+            $result['file_count'] = $storage->file_count;
+            $result['content'] = $content;
+
+            $this->view('users/storage', $result);
         }
         
 

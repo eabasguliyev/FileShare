@@ -108,4 +108,46 @@
 
             return $this->db->execute();
         }
+
+        public function getAllByFileName(string $search, array $range){
+            $sql = "SELECT COUNT(*) as `report_count` FROM `report`
+                                INNER JOIN `fileinfo` ON `report`.`fileinfo_id` = `fileinfo`.`id`
+                                INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                                WHERE `file`.`name` LIKE CONCAT('%', :search, '%')";
+
+            $this->db->query($sql);
+            $this->db->bind(':search', $search);
+            $this->db->execute();
+            $total = $this->db->single()->report_count;
+
+            $sql = "SELECT *, `report`.`id` AS `report_id`,
+                                `report`.`name` AS `report_name`,
+                                `report`.`email` AS `report_email`,
+                                `report`.`description` AS `report_description`,
+                                `file`.`name` AS `file_name`
+                    FROM `report` 
+                    INNER JOIN `fileinfo` ON `report`.`fileinfo_id` = `fileinfo`.`id`
+                    INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                    WHERE `file`.`name` LIKE CONCAT('%', :search, '%') 
+                    ORDER BY `report`.`created_at` DESC
+                    LIMIT :start, :count";
+
+            $this->db->query($sql);
+            $this->db->bind(':search', $search);
+            $this->db->bind(':start', $range[0]);
+            $this->db->bind(':count', $range[1]);
+            $this->db->execute();
+            $dataSet = $this->db->resultSet();
+            $pageCount = 0;
+            if($this->db->rowCount() != 0)
+            {
+                $pageCount = ceil($total / $range[1]);
+            }
+
+            return [
+                'reports' => $dataSet,
+                'total_count' => $total, 
+                'page_count' => $pageCount 
+            ];
+        }
     }

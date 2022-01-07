@@ -1,15 +1,15 @@
 <?php require_once APPROOT . '/views/partials/header.php'?>
     <div class="d-flex flex-column justify-content-center align-items-center">
-        <h1 class="fs-3 my-4">Upload File</h1>
+        <h1 class="fs-3 my-4"><?= $data['content']->title ?></h1>
         <form id="form" class="w-50 d-flex flex-column">
             <div class="progress d-none">
                 <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
             </div>
             <div class="card card-body bg-light ">
                 <div class="d-flex flex-column justify-content-center align-items-center">
-                    <p>1 file max up to <span class="text-danger"><?= formatBytes(FREE_FILE_SIZE, 2)?></span></p>
+                    <p><?= $data['content']->card_title ?> <span class="text-danger"><?= formatBytes(FREE_FILE_SIZE, 2)?></span></p>
                     <div class="upload-file">
-                        <label for="custom-input-file" id="custom-label-file" class="btn btn-success btn-block my-2 mt-3"><i class="bi bi-file-earmark-fill me-1"></i>Choose File</label>
+                        <label for="custom-input-file" id="custom-label-file" class="btn btn-success btn-block my-2 mt-3"><i class="bi bi-file-earmark-fill me-1"></i><?= $data['content']->select_file ?></label>
                         <input type="file" class="d-none" name="uploaded_file" id="custom-input-file">
                     </div>
                     <div class="input-group d-none uploaded-file py-4 container">
@@ -24,19 +24,19 @@
                             </div>
                         </div>
                         <div class="input-group ms-1">
-                            <span class="input-group-text">Description</span>
+                            <span class="input-group-text"><?= $data['content']->file_desc ?></span>
                             <textarea class="form-control" name="description"></textarea>
                         </div>
                         <div class="row w-50 mt-2">
                             <div class="col-4">
                                 <div class="form-check ms-1 mt-2">
                                     <input name="isPrivate" class="form-check-input" type="checkbox" id="private">
-                                    <label class="form-check-label unselectable cursor-pointer" for="private">Private</label>
+                                    <label class="form-check-label unselectable cursor-pointer" for="private"><?= $data['content']->priv_check ?></label>
                                 </div>
                             </div>
                             <div class="col-8">
                                 <div class="input-group">
-                                    <input name="password" type="text" id="password"  class="form-control d-none" placeholder="Password">
+                                    <input name="password" type="text" id="password"  class="form-control d-none" placeholder="<?= $data['content']->priv_pass ?>">
                                 </div>
                             </div>
                         </div>
@@ -46,11 +46,11 @@
             <div class="card card-body bg-light mt-2">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="terms">
-                    <label class="form-check-label unselectable cursor-pointer" for="terms">I have read and agree to the</label>
-                    <a href="#" class="nav-link d-inline px-1">Terms of service</a>
+                    <label class="form-check-label unselectable cursor-pointer" for="terms"><?= $data['content']->terms_label ?></label>
+                    <a href="<?= URLROOT ?>/pages/terms" class="nav-link d-inline px-1"><?= $data['content']->terms_link ?></a>
                 </div>
             </div>
-            <button class="btn btn-primary px-4 mt-2" id="submit-file" type="submit"><i class="bi bi-arrow-up-square text-white me-2"></i>Upload</button>
+            <button class="btn btn-primary px-4 mt-2" id="submit-file" type="submit"><i class="bi bi-arrow-up-square text-white me-2"></i><?= $data['content']->submit ?></button>
         </form>
     </div>
     <div class="modal" id="myModal" tabindex="-1">

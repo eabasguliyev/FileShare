@@ -1,6 +1,6 @@
 <?php require_once APPROOT . '/views/partials/header.php'?>
     <div class="d-flex flex-column justify-content-center align-items-center">
-        <h1 class="fs-3 my-4">Upload Complete</h1>
+        <h1 class="fs-3 my-4"><?= $data['content']->title ?></h1>
 
         <div class="container w-75">
             <hr class="m-0">
@@ -9,16 +9,16 @@
                     <a href="<?= $data['path'] ?>" class="nav-link"><?= $data['name'] ?></a>
                 </div>
                 <div class="col-2 mt-1">
-                    <p>Size: <span class="text-black-50"><?= formatBytes($data['size']) ?></span></p>
+                    <p><?= $data['content']->size ?>: <span class="text-black-50"><?= formatBytes($data['size']) ?></span></p>
                 </div>
             </div>
             <hr class="m-0">
             <ul class="nav nav-tabs mt-3" data-active-tab = "0">
                 <li class="nav-item cursor-pointer unselectable" data-item="link">
-                    <p class="nav-link active" >Download Link</p>
+                    <p class="nav-link active" ><?= $data['content']->link ?></p>
                 </li>
                 <li class="nav-item cursor-pointer unselectable" data-item="html">
-                    <p class="nav-link" >HTML Code</p>
+                    <p class="nav-link" ><?= $data['content']->html ?></p>
                 </li>
             </ul>
             <div class="card card-body bg-light mt-2">

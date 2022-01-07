@@ -1,0 +1,15 @@
+{
+  "title": "Download File",
+  "table": {
+    "col0": "File Name",
+    "col1": "Upload",
+    "col2": "Date",
+    "col3": "Size",
+    "col4": "Download"
+  },
+  "guest": "Guest",
+  "time": "times",
+  "report": "Report this file",
+  "desc": "Description",
+  "button": "Create Download Link"
+}

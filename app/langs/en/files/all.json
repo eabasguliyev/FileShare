@@ -1,0 +1,17 @@
+{
+  "title": "Uploaded Files",
+  "search_input": "Enter file name",
+  "search_btn": "Search",
+  "search_result": "Result",
+  "table": {
+    "col0": "File Name",
+    "col1": "Upload",
+    "col2": "Date",
+    "col3": "Size",
+    "col4": "Download"
+  },
+  "time": "times",
+  "guest": "Guest",
+  "pagePrev": "Previous",
+  "pageNext": "Next"
+}

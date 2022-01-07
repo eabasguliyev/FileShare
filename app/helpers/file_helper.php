@@ -233,4 +233,10 @@
             unlink($path . '\\' . $fileName);
             rmdir($path);
         }
+
+        public static function getPageContentByLang($path, $lang){
+            $content = file_get_contents(APPROOT . '\\langs\\' . $lang . '\\' . $path . '.json');
+
+            return json_decode($content);
+        }
     }

@@ -8,7 +8,8 @@
         protected $currentController = 'Pages';
         protected $currentMethod = 'index';
         protected $params = [];
-
+        public static $lang = 'en';
+        public static $langs = [];
         /**
          * Parse url and call controller method
          */
@@ -16,13 +17,33 @@
         {
             $url = $this->getUrl();
 
-            // Look in controllers for first value
-            if(isset($url[0]) && file_exists('../app/controllers/' . $url[0] . '.php')){
-                // If exists, set as controller
-                $this->currentController = ucfirst($url[0]);
+            $index = 0;
 
-                // Unset 0 index
-                unset($url[0]);
+            // Check lang
+            self::$langs = [
+                'az',
+                'en',
+            ];
+
+            if(isset($url[$index]) && in_array($url[$index], self::$langs)){
+                self::$lang = strtolower($url[$index]);
+
+                setcookie('lang', self::$lang, 0, "/" . PROJECTROOT);
+
+                unset($url[$index]);
+                $index++;
+            }else{
+                self::$lang = $_COOKIE['lang'];
+            }
+
+            // Look in controllers
+            if(isset($url[$index]) && file_exists('../app/controllers/' . $url[$index] . '.php')){
+                // If exists, set as controller
+                $this->currentController = ucfirst($url[$index]);
+
+                // Unset
+                unset($url[$index]);
+                $index++;
             }
 
             // Require the controller
@@ -32,13 +53,14 @@
             $this->currentController = new $this->currentController;
             
             // Check for second part of url
-            if(isset($url[1])){
+            if(isset($url[$index])){
                 // Check to see if method exists in controller
-                if(method_exists($this->currentController, $url[1])){
-                    $this->currentMethod = $url[1];
+                if(method_exists($this->currentController, $url[$index])){
+                    $this->currentMethod = $url[$index];
 
-                    // Unset 1 index
-                    unset($url[1]);
+                    // Unset index
+                    unset($url[$index]);
+                    $index++;
                 }
 
                 // Get params

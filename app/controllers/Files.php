@@ -28,37 +28,32 @@
          *  All Uploaded Public Files Page
          */
         public function all($pageNo = 1){
+            $start = ($pageNo - 1) * 10;
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-                $start = ($pageNo - 1) * 10;
-                $result = $this->fileInfoModel->getFileInfosByName($_POST['search'], [$start, $start + 10], FileHelper::FILE_ATTR_PUBLIC);
-
-                //usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
-                $idArr = ModelHelper::getAllUserFileId($result['files']);
-
-                if(count($idArr) > 0){
-                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
-                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
-                }
+                $result = $this->fileInfoModel->getFileInfosByNameAndMode($_POST['search'], [$start, 10], FileHelper::FILE_ATTR_PUBLIC);
 
                 $result['search'] = $_POST['search'];
             }else{
                 // Load view
                 $start = ($pageNo - 1) * 10;
                 $result = $this->fileInfoModel->getFileInfosByMode([$start, $start + 10], FileHelper::FILE_ATTR_PUBLIC);
+            }
 
-                //usort($result['files'], [new SortHelper(false), 'sortFilesByDate']);
-                $idArr = ModelHelper::getAllUserFileId($result['files']);
+            $idArr = ModelHelper::getAllUserFileId($result['files']);
 
-                if(count($idArr) > 0){
-                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
-                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
-                }
-                
+            if(count($idArr) > 0){
+                $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
+                $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
             }
             
+            $content = FileHelper::getPageContentByLang('files/all', Core::$lang);
+
             $result['page_no'] = $pageNo;
+            $result['content'] = $content;
+
             $this->view('files/all', $result);
         }
 
@@ -130,7 +125,13 @@
                     ajaxResponse(200, $id);
                 }else die("Something went wrong!");
             }else{
-                $this->view('files/upload');
+                $content = FileHelper::getPageContentByLang('files/upload', Core::$lang);
+
+                $data = [
+                    'content' => $content,
+                ];
+
+                $this->view('files/upload', $data);
             }
         }
 
@@ -138,6 +139,7 @@
          *  File Info Page
          */
         public function info($fileInfoId){
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 // Private file password check
 
@@ -148,7 +150,7 @@
                     'password' => $_POST['password'],
                     'errors' => [
                         'password' => ''
-                    ]
+                    ],
                 ];
                 
 
@@ -157,8 +159,12 @@
                 if($fileInfo){
                     if(password_verify($data['password'], $fileInfo->fileinfo_password)){
                         // Password is correct
+
+                        $content = FileHelper::getPageContentByLang('files/info', Core::$lang);
+
                         $data = [
                             'file' => $fileInfo,
+                            'content' => $content
                         ];
                         
                         $this->view('files/info', $data);
@@ -175,21 +181,25 @@
                 if($fileInfo){
                     if($fileInfo->fileinfo_status == FileHelper::FILE_ATTR_PRIVATE){
                         // Private File
+                        $content = FileHelper::getPageContentByLang('files/private', Core::$lang);
 
                         $data = [
                             'id' => $fileInfoId,
                             'password' => '',
                             'errors' => [
                                 'password' => ''
-                            ]
+                            ],
+                            'content' => $content
                         ];
     
                         $this->view('files/private', $data);
                     }else if($fileInfo->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC){
                         // Public File
+                        $content = FileHelper::getPageContentByLang('files/info', Core::$lang);
 
                         $data = [
                             'file' => $fileInfo,
+                            'content' => $content
                         ];
                         
                         $this->view('files/info', $data);
@@ -203,11 +213,15 @@
             $fileInfo = $this->fileInfoModel->getFileInfoById($fileInfoId);
             
             if($fileInfo){
+                $content = FileHelper::getPageContentByLang('files/success', Core::$lang);
+                
                 $data = [
                     'name' => $fileInfo->file_name,
                     'size' => $fileInfo->size,
-                    'path' => URLROOT . '/files/info/' . $fileInfo->fileinfo_id
+                    'path' => URLROOT . '/files/info/' . $fileInfo->fileinfo_id,
+                    'content' => $content
                 ];
+
                 $this->view('files/success', $data);
             }else die("Link is broken");
         }
@@ -337,19 +351,24 @@
 
          public function reportedfiles($pageNo = 1){
             startSession('admin');
+
             if(!isAdminLoggedIn())
                 redirect('admins/login');
-            
+
+            $start = ($pageNo - 1) * 10;
+                
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
+                $result = $this->reportModel->getAllByFileName($_POST['search'], [$start, 10]);
+                $result['search'] = $_POST['search'];
             }else{
-                $start = ($pageNo - 1) * 10;
-
                 $result = $this->reportModel->getAll([$start, 10]);
-                $result['page_no'] = $pageNo;
-
-                $this->view('admins/filereports', $result);
             }
+
+            $result['page_no'] = $pageNo;
+
+            $this->view('admins/filereports', $result);
         }
 
         public function allfiles($pageNo = 1){
@@ -358,22 +377,26 @@
             if(!isAdminLoggedIn())
                 redirect('admins/login');
 
+            $start = ($pageNo - 1) * 10;
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+                $result = $this->fileInfoModel->getFileInfosByName($_POST['search'], [$start, 10]);
+
+                $result['search'] = $_POST['search'];
             }else{
-                $start = ($pageNo - 1) * 10;
                 $result = $this->fileInfoModel->getAllFileInfo([$start, 10]);
-
-                $idArr = ModelHelper::getAllUserFileId($result['files']);
-
-                if(count($idArr) > 0){
-                    $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
-                    $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
-                }
-
-                $result['page_no'] = $pageNo;
-                $this->view('admins/allfiles', $result);
             }
+
+            $idArr = ModelHelper::getAllUserFileId($result['files']);
+
+            if(count($idArr) > 0){
+                $detailedResult = $this->fileInfoModel->getAllFileInfoUserDetailById($idArr);
+                $result['files'] = ModelHelper::mergeFileInfoArr($result['files'], $detailedResult);
+            }
+
+            $result['page_no'] = $pageNo;
+            $this->view('admins/allfiles', $result);
         }
 
         public function changefilestatus($fileInfoId){

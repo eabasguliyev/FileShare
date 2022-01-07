@@ -1,25 +1,25 @@
 <?php require_once APPROOT . '/views/partials/header.php'?>
     <div class="container">
         <div class="d-flex flex-column justify-content-center align-items-center w-75 mx-auto">
-            <h1 class="fs-3 mt-3">Your Storage</h1>
+            <h1 class="fs-3 mt-3"><?= $data['content']->title ?></h1>
             <div class="alert alert-primary w-100 text-center mt-2" role="alert">
-                <p class="lead d-inline">Used: </p><span><?= $data['used_size'] ?> of <?= formatBytes(FREE_STORAGE_SIZE) ?> / <?= $data['file_count'] ?> file(s)</span>
+                <p class="lead d-inline"><?= $data['content']->storage_used ?>: </p><span><?= $data['used_size'] ?> of <?= formatBytes(FREE_STORAGE_SIZE) ?> / <?= $data['file_count'] ?> file(s)</span>
             </div>
             <form method="POST" class="w-100">
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" name="search" placeholder="Enter file name" value="<?= isset($data['search']) ? $data['search'] : ''?>">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                    <input type="text" class="form-control" name="search" placeholder="<?= $data['content']->search_input ?>" value="<?= isset($data['search']) ? $data['search'] : ''?>">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><?= $data['content']->search_btn ?></button>
                 </div>
             </form>
-            <p id="result-count" class="mt-4">About <?= $data['files_count'] ?> result(s)</p>
+            <p id="result-count" class="mt-4"><?= $data['content']->search_result ?>: <?= $data['files_count'] ?></p>
             <table class="table table-hover mt-2">
                 <thead>
                     <tr>
-                        <th>File Name</th>
-                        <th>Date</th>
-                        <th>Size</th>
-                        <th>Download</th>
-                        <th>Action</th>
+                        <th><?= $data['content']->table->col0 ?></th>
+                        <th><?= $data['content']->table->col1 ?></th>
+                        <th><?= $data['content']->table->col2 ?></th>
+                        <th><?= $data['content']->table->col3 ?></th>
+                        <th><?= $data['content']->table->col4 ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +28,7 @@
                             <td><a href="<?= URLROOT ?>/files/info/<?= $file->fileinfo_id ?>"><?= $file->file_name ?></a></td>
                             <td><?= (new DateTime($file->file_created_at))->format('d.m.Y') ?></td>
                             <td><?= formatBytes($file->size) ?></td>
-                            <td><?= $file->download_count ?> times</td>
+                            <td><?= $file->download_count ?> <?= $data['content']->time ?></td>
                             <td>
                                 <a href="javascript:void(0);" class="me-2" onclick="openModal(<?= $file->fileinfo_id ?>)"><i class="bi bi-pencil-square"></i></a>
                                 <a href="<?= URLROOT . '/files/delete/' . $file->file_id ?>"><i class="bi bi-trash"></i></a>
@@ -40,7 +40,7 @@
             <nav >
                 <ul class="pagination">
                     <li class="page-item <?= $data['page_no'] == 1 ? 'disabled' : '' ?>">
-                      <a class="page-link" href="<?= $data['page_no'] == 1 ? '#' : URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $data['page_no'] - 1 ?>">Previous</a>
+                      <a class="page-link" href="<?= $data['page_no'] == 1 ? '#' : URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $data['page_no'] - 1 ?>"><?= $data['content']->pagePrev ?></a>
                     </li>
                     <?php for($i = 1; $i <= $data['page_count']; $i++): ?>
                     <li class="page-item <?= $data['page_no'] == $i ? 'active' : '' ?>" aria-current="page">
@@ -48,7 +48,7 @@
                     </li>
                     <?php endfor; ?>
                     <li class="page-item <?= $data['page_no'] == $data['page_count'] || $data['page_count'] == 0 ? 'disabled' : '' ?>">
-                        <a class="page-link" href="<?= $data['page_no'] == $data['page_count'] ? '#' : URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $data['page_no'] + 1 ?>">Next</a>
+                        <a class="page-link" href="<?= $data['page_no'] == $data['page_count'] ? '#' : URLROOT . '/users/storage/' . $_SESSION['user_storage_id'] . '/' . $data['page_no'] + 1 ?>"><?= $data['content']->pageNext ?></a>
                     </li>
                 </ul>
             </nav>

@@ -1,39 +1,39 @@
 <?php require_once APPROOT . '/views/partials/header.php'?>
     <div class="d-flex flex-column justify-content-center align-items-center">
-        <h1 class="fs-3 my-4">Download File</h1>
+        <h1 class="fs-3 my-4"><?= $data['content']->title ?></h1>
         <div class="w-50 d-flex flex-column">
             <table class="table table-hover mt-2">
                 <thead>
                     <tr>
-                        <th>File Name</th>
-                        <th>Upload</th>
-                        <th>Date</th>
-                        <th>Size</th>
-                        <th>Download</th>
+                        <th><?= $data['content']->table->col0 ?></th>
+                        <th><?= $data['content']->table->col1 ?></th>
+                        <th><?= $data['content']->table->col2 ?></th>
+                        <th><?= $data['content']->table->col3 ?></th>
+                        <th><?= $data['content']->table->col4 ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><?= $data['file']->file_name ?></td>
-                        <td><?= property_exists($data['file'], 'username') ? $data['file']->username : 'Guest' ?></td>
+                        <td><?= property_exists($data['file'], 'username') ? $data['file']->username : $data['content']->guest ?></td>
                         <td><?= (new DateTime($data['file']->file_created_at))->format('d.m.Y') ?></td>
                         <td><?= formatBytes($data['file']->size) ?></td>
-                        <td><?= $data['file']->download_count ?> times</td>
+                        <td><?= $data['file']->download_count ?> <?= $data['content']->time ?></td>
                     </tr>
                 </tbody>
             </table>
             <div class="d-grid">
                 <div class="row">
                     <div class="col-6">
-                        <p class="lead fs-6 d-inline">Description: </p><span><?= $data['file']->description ?></span>
+                        <p class="lead fs-6 d-inline"><?= $data['content']->desc ?>: </p><span><?= $data['file']->description ?></span>
                     </div>
                     <div class="col-6">
-                        <a href="javascript:void(0);" class="text-danger float-end me-1" onclick="myModal.show()">Report this file</a>
+                        <a href="javascript:void(0);" class="text-danger float-end me-1" onclick="myModal.show()"><?= $data['content']->report ?></a>
                     </div>
                 </div>
                 <div class="row mt-5">
                     <div  class="col text-center">
-                        <button id="download-btn" class="btn btn-primary">Create Download Link</button>
+                        <button id="download-btn" class="btn btn-primary"><?= $data['content']->button ?></button>
                     </div>
                     <div id="download-card" class="col card card-body bg-light d-none">
                         <div class="row ">

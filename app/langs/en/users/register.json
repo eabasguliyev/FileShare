@@ -1,0 +1,11 @@
+{
+  "card_title": "Create an Account",
+  "card_text": "Please fill out this form to register",
+  "name": "Name",
+  "username": "Username",
+  "email": "Email",
+  "pass": "Password",
+  "pass_confirm": "Confirm Password",
+  "register": "Register",
+  "login": "Have an account? Login"
+}

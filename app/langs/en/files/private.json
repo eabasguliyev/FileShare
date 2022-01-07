@@ -1,0 +1,5 @@
+{
+  "title": "Private File",
+  "desc": "This file is private file. If you want to access file, please enter password.",
+  "password": "Password"
+}

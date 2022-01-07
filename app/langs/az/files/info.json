@@ -1,0 +1,15 @@
+{
+  "title": "Faylı Yüklə",
+  "table": {
+    "col0": "Fayl Adı",
+    "col1": "Yükləyən",
+    "col2": "Tarix",
+    "col3": "Ölçü",
+    "col4": "Yükləndi"
+  },
+  "guest": "Qonaq",
+  "time": "Dəfə",
+  "report": "Faylı şikayət et",
+  "desc": "Açıqlama",
+  "button": "Yükləmə Linki Yaradın"
+}

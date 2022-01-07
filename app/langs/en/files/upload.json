@@ -1,0 +1,11 @@
+{
+  "title": "Upload File",
+  "card_title": "1 file max up to",
+  "select_file": "Choose File",
+  "terms_label": "I have read and agree to the",
+  "terms_link": "Terms of Service",
+  "file_desc": "Description",
+  "priv_check": "Private",
+  "priv_pass": "Password",
+  "submit": "Upload"
+}

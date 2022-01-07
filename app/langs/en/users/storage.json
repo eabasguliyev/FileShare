@@ -1,0 +1,17 @@
+{
+  "title": "Your Storage",
+  "storage_used": "Used",
+  "search_input": "Enter file name",
+  "search_btn": "Search",
+  "search_result": "Result",
+  "table": {
+    "col0": "File Name",
+    "col1": "Date",
+    "col2": "Size",
+    "col3": "Download",
+    "col4": "Action"
+  },
+  "time": "times",
+  "pagePrev": "Previous",
+  "pageNext": "Next"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Saxlama sahəsi",
+  "storage_used": "İstifadə olunub",
+  "search_input": "Fayl adını daxil edin",
+  "search_btn": "Axtar",
+  "search_result": "Nəticə",
+  "table": {
+    "col0": "Fayl Adı",
+    "col1": "Tarix",
+    "col2": "Ölçü",
+    "col3": "Yükləndi",
+    "col4": "Fəaliyyət"
+  },
+  "time": "dəfə",
+  "pagePrev": "Əvvəlki",
+  "pageNext": "Sonrakı"
+}

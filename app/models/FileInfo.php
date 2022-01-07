@@ -45,6 +45,51 @@
             ];
         }
 
+        public function getFileInfosByName(string $search, array $range){
+            $range[1] -= $range[0];
+            $sql = "SELECT COUNT(*) as file_count FROM `fileinfo`
+                                INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`
+                                 WHERE `file`.`name` LIKE CONCAT('%', :search, '%')";
+
+            $this->db->query($sql);
+            $this->db->bind(':search', $search);
+            $this->db->execute();
+            $totalFile = $this->db->single()->file_count;
+
+            $sql = "SELECT *, `file`.`created_at` as `file_created_at`, 
+                            `file`.`name` as `file_name`, 
+                            `fileinfo`.`id` as `fileinfo_id`, 
+                            `fileinfo`.`status` as `fileinfo_status`, 
+                            `file`.`id` as `file_id` FROM `fileinfo` 
+                            INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id` 
+                            WHERE `file`.`name` LIKE CONCAT('%', :search, '%') ORDER BY `file`.`created_at` 
+                            DESC LIMIT :start, :count";
+
+            // Creates a query
+            $this->db->query($sql);
+
+            // Bind values
+            $this->db->bind(':search', $search);
+            $this->db->bind(':start', $range[0]);
+            $this->db->bind(':count', $range[1]);
+
+            // Execute query
+            $this->db->execute();
+
+            $dataSet = $this->db->resultSet();
+
+            $pageCount = 0;
+            if($this->db->rowCount() != 0)
+            {
+                $pageCount = ceil($totalFile / $range[1]);
+            }
+            return [
+                'files' => $dataSet,
+                'total_count' => $totalFile, 
+                'page_count' => $pageCount 
+            ];
+        }
+
         public function getFileInfosByMode(array $range, int $mode){
             // $range[1] -= $range[0];
 
@@ -103,7 +148,7 @@
             return $this->db->resultSet();
         }
 
-        public function getFileInfosByName(string $search, array $range, int $mode){
+        public function getFileInfosByNameAndMode(string $search, array $range, int $mode){
             $range[1] -= $range[0];
             $sql = "SELECT COUNT(*) as file_count FROM `fileinfo`
                                 INNER JOIN `file` ON `fileinfo`.`file_id` = `file`.`id`

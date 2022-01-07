@@ -1,0 +1,11 @@
+{
+  "card_title": "Hesab yarat",
+  "card_text": "Qeydiyyatdan keçmək üçün bu formu doldurun",
+  "name": "Ad",
+  "username": "İstifadəçi adı",
+  "email": "E-poçt",
+  "pass": "Parol",
+  "pass_confirm": "Şifrəni təsdiqləyin",
+  "register": "Qeydiyyatdan keç",
+  "login": "Hesabınız var? Daxil olun"
+}

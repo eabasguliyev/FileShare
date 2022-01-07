@@ -1,0 +1,17 @@
+{
+  "title": "Yüklənmiş Fayllar",
+  "search_input": "Fayl adını daxil edin",
+  "search_btn": "Axtar",
+  "search_result": "Nəticə",
+  "table": {
+    "col0": "Fayl Adı",
+    "col1": "Yükləyən",
+    "col2": "Tarix",
+    "col3": "Ölçü",
+    "col4": "Yükləndi"
+  },
+  "time": "dəfə",
+  "guest": "Qonaq",
+  "pagePrev": "Əvvəlki",
+  "pageNext": "Sonrakı"
+}
