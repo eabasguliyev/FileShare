@@ -5,7 +5,7 @@
          *  @return array files and total_count
          */
         public function getAllFileInfo(array $range){
-            $range[1] -= $range[0];
+            // $range[1] -= $range[0];
 
             $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo`");
             $this->db->execute();
@@ -46,7 +46,7 @@
         }
 
         public function getFileInfosByMode(array $range, int $mode){
-            $range[1] -= $range[0];
+            // $range[1] -= $range[0];
 
             $this->db->query("SELECT COUNT(*) as file_count FROM `fileinfo` WHERE `fileinfo`.`status` = :status");
             $this->db->bind(':status', $mode);

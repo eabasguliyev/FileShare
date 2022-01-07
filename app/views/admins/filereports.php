@@ -3,7 +3,7 @@
         <div class="d-flex flex-column justify-content-center align-items-center w-75 mx-auto">
             <h1 class="fs-3 my-4">Reported Files</h1>
             <div class="w-100">
-                <?php flash('file_remove_success') ?>
+                <?php flash('report_delete_success') ?>
             </div>
             <form method="POST" class="w-100">
                 <div class="input-group mb-3">
@@ -15,55 +15,23 @@
             <table class="table table-hover mt-2">
                 <thead>
                     <tr>
+                        <th>Name</th>
+                        <th>Email</th>
                         <th>File Name</th>
-                        <th>Upload</th>
-                        <th>Date</th>
-                        <th>Size</th>
-                        <th>Download</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['files'] as $file): ?>
-                        <tr>
-                            <td><a href="<?= URLROOT ?>/files/info/<?= $file->fileinfo_id ?>"><?= $file->file_name ?></a></td>
-                            <td><?= property_exists($file, 'username') ? $file->username : 'Guest' ?></td>
-                            <td><?= (new DateTime($file->file_created_at))->format('d.m.Y') ?></td>
-                            <td><?= formatBytes($file->size) ?></td>
-                            <td><?= $file->download_count ?> times</td>
-                            <td>
-                                <?php
-                                    $status = '';
-                                    switch($file->fileinfo_status){
-                                        case FileHelper::FILE_ATTR_PRIVATE:
-                                            $status = 'Private';
-                                            break;
-                                        case FileHelper::FILE_ATTR_PUBLIC:
-                                            $status = 'Public';
-                                            break;
-                                        case FileHelper::FILE_ATTR_REMOVE:
-                                            $status = 'Removed';
-                                            break;
-                                        case FileHelper::FILE_ATTR_INACTIVE:
-                                            $status = 'Inactive';
-                                            break;
-                                        default:
-                                            $status = 'Unknown';
-                                    }
-                                    echo $status;
-                                ?>
-                            </td>
+                    <?php foreach ($data['reports'] as $report): ?>
+                        <tr data-reportid='<?= $report->report_id ?>' class="cursor-pointer">
+                            <td><?= $report->report_name ?></td>
+                            <td><?= $report->report_email ?></td>
+                            <td><?= $report->file_name ?></td>
                             <td >
                                 <?php
                                     $hasAccess = $_SESSION['admin_access_status'] == AdminHelper::ADMIN_STATUS_WRITE;
                                 ?>
-                                <a class="<?= $hasAccess ? '' : 'disabled' ?>" href="javascript:void(0);" class="me-2">
-                                    <input class="form-check-input statusCheckbox" type="checkbox" value=""
-                                    data-fileinfoid='<?= $file->fileinfo_id ?>'
-                                    <?= $file->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC || $file->fileinfo_status == FileHelper::FILE_ATTR_PRIVATE ? 'checked' : '' ?>>
-                                </a>
-                                <a class="<?= $hasAccess ? '' : 'disabled' ?>" href="<?= URLROOT . '/admins/deletefile/' . $file->file_id?>"><i class="bi bi-trash"></i></a>
+                                <a class="<?= $hasAccess ? '' : 'disabled' ?>" href="<?= URLROOT . '/reports/deletereport/' . $report->report_id?>"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>    
@@ -86,26 +54,101 @@
             </nav>
         </div>
     </div>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                    <h2 class="fs-5">Report Info</h2>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Name: </p><span id="report-name"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Email: </p><span id="report-email"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Description: </p><span id="report-desc"></span>
+                    </div>
+                    <hr class="m-0 mb-2">
+                    <h2 class="fs-5">File Info</h2>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Upload: </p><span id="file-upload"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">File Name: </p><span id="file-name"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Type: </p><span id="file-type"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <p class="fs-6 fw-bold d-inline">Status: </p><span id="file-status"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a class="btn btn-primary <?= $hasAccess ? '' : 'disabled' ?>" href="#" id="delete-file">Delete File</a>
+                    <a class="btn btn-danger <?= $hasAccess ? '' : 'disabled' ?>" href="#" id="delete-report">Delete Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
-        let statusCheckbox = null;
+        let myModal = null;
         $(() => {
-            statusCheckbox = $('.statusCheckbox');
-
-            statusCheckbox.on('change', (e) => {
-                const target = $(e.target);
-                const stat = target.prop('checked');
-                const fileInfoId = target.data('fileinfoid');
-
-                $.post(`<?= URLROOT ?>/admins/changefilestatus/${fileInfoId}`, 
-                {
-                    status: stat
-                }).done(e => {
-                    location.reload();
-                }).fail(e => {
-                    console.log(msg);
+            $('.table tr.cursor-pointer').on('click', (e) =>{
+                const target = $(e.currentTarget);
+                const id = target.data('reportid');
+                myModal = new bootstrap.Modal($('#myModal'), {
+                keyboard: false
                 });
-            });
+
+
+                $.post(`<?= URLROOT ?>/reports/getreport/${id}`)
+                .done(e => {
+                    const obj = JSON.parse(e);
+                    $('#report-name').text(obj.report_name);
+                    $('#report-email').text(obj.report_email);
+                    $('#report-desc').text(obj.report_description);
+                    $('#file-upload').text(obj.username);
+                    $('#file-name').text(obj.file_name);
+                    $('#file-type').text(obj.file_type);
+
+                    let status = '';
+
+                    switch(obj.fileinfo_status){
+                        case '0':
+                            status = 'Public';
+                            break;
+                        case '1':
+                            status = 'Private';
+                            break;
+                        case '2':
+                            status = 'Inactive';
+                            break;
+                        case '3':
+                            status = 'Remove';
+                            break;
+                        case '4':
+                            status = 'Active';
+                            break;
+                        default:
+                            status = 'Unknown';
+                    }
+
+                    $('#file-status').text(status);
+                    
+                    $('#delete-report').prop('href', "<?= URLROOT . '/reports/deletereport/' ?>"
+                                             + obj.report_id);
+                    $('#delete-file').prop('href', "<?= URLROOT . '/admins/deletefile/' ?>" 
+                                            + obj.file_id);
+                    myModal.show();
+                })
+                .fail(e => {});
+            })
         });
     </script>
 <?php require_once APPROOT . '/views/partials/footer.php'?>

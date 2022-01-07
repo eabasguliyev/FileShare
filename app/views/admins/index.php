@@ -22,14 +22,14 @@
         <div class="accordion-body">
             <ul class="list-unstyled d-flex gap-4">
                 <li class="text-center">
-                    <a href="<?= URLROOT ?>/admins/allfiles">
+                    <a href="<?= URLROOT ?>/files/allfiles">
                         <i class="bi bi-files fs-4 "></i>
                         <br/>
                         Uploaded Files
                     </a>
                 </li>
                 <li class="text-center">
-                    <a href="<?= URLROOT ?>/admins/reportedfiles">
+                    <a href="<?= URLROOT ?>/files/reportedfiles">
                         <i class="bi bi-flag-fill fs-4"></i>
                         <br/>
                         Reported Files

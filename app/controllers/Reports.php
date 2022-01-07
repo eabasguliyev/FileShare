@@ -25,6 +25,12 @@
                 ];
 
                 $r = ValidateUserInput::isEmpty($data, 3);
+                if(!filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL))
+                {
+                    $r = false;
+
+                    $data['errors']['email'] = 'Please provide valid email address';
+                }
                 
                 if($r){
                     $data['id'] = $_POST['id'];
@@ -40,6 +46,35 @@
                 }else{
                     ajaxResponse(406, $data);
                 }
+            }
+        }
+
+        public function getreport($id){
+            startSession('admin');
+            if(!isAdminLoggedIn()){
+                redirect('admins/login');
+            }
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $rec = $this->reportModel->getReportById($id);
+                
+                if($rec){
+                    ajaxResponse(200, $rec);
+                }else ajaxResponse(406, 'There is no report associated this id -> ' . $id);
+            }
+        }
+        
+        public function deletereport($id){
+            startSession('admin');
+            if(!isAdminLoggedIn()){
+                redirect('admins/login');
+            }
+
+            if($_SERVER['REQUEST_METHOD'] == 'GET'){
+                if($this->reportModel->delete($id)){
+                    flash('report_delete_success', 'Report successfully deleted');
+                    redirect('files/reportedfiles');
+                }else die('something went wrong');
             }
         }
     }

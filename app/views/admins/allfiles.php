@@ -63,7 +63,7 @@
                                     data-fileinfoid='<?= $file->fileinfo_id ?>'
                                     <?= $file->fileinfo_status == FileHelper::FILE_ATTR_PUBLIC || $file->fileinfo_status == FileHelper::FILE_ATTR_PRIVATE ? 'checked' : '' ?>>
                                 </a>
-                                <a class="<?= $hasAccess ? '' : 'disabled' ?>" href="<?= URLROOT . '/admins/deletefile/' . $file->file_id?>"><i class="bi bi-trash"></i></a>
+                                <a class="<?= $hasAccess ? '' : 'disabled' ?>" href="<?= URLROOT . '/files/deletefile/' . $file->file_id?>"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>    
@@ -97,7 +97,7 @@
                 const stat = target.prop('checked');
                 const fileInfoId = target.data('fileinfoid');
 
-                $.post(`<?= URLROOT ?>/admins/changefilestatus/${fileInfoId}`, 
+                $.post(`<?= URLROOT ?>/files/changefilestatus/${fileInfoId}`, 
                 {
                     status: stat
                 }).done(e => {
