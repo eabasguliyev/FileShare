@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2022 at 08:34 PM
+-- Generation Time: Jan 07, 2022 at 05:01 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -61,7 +61,13 @@ CREATE TABLE `file` (
 --
 
 INSERT INTO `file` (`id`, `name`, `path`, `size`, `created_at`, `type`) VALUES
-(181, 'rap_god.mp3', 'fileshare\\uploadedfiles\\public\\dir_61d5dfd970f008.40390639', '5780819', '2022-01-05 22:13:45', 'mp3');
+(184, 'note.txt', 'fileshare\\uploadedfiles\\public\\dir_61d81d92c5a8f7.84186603', '36', '2022-01-07 15:01:38', 'txt'),
+(185, 'rap_god.mp3', 'fileshare\\uploadedfiles\\public\\dir_61d81d9f2bc280.79461532', '5780819', '2022-01-07 15:01:51', 'mp3'),
+(188, 'compressedFolder.zip', 'fileshare\\uploadedfiles\\public\\dir_61d81dec4750c7.94950588', '1711', '2022-01-07 15:03:08', 'zip'),
+(189, 'newNote1.txt', 'fileshare\\uploadedfiles\\private\\dir_61d827a341d9d9.36947421', '10', '2022-01-07 15:44:35', 'txt'),
+(190, 'note.txt', 'fileshare\\uploadedfiles\\public\\dir_61d835063889e0.68312051', '36', '2022-01-07 16:41:42', 'txt'),
+(191, 'note.txt', 'fileshare\\uploadedfiles\\public\\dir_61d841e1237dc6.64863174', '36', '2022-01-07 17:36:33', 'txt'),
+(192, 'query.sql', 'fileshare\\uploadedfiles\\public\\dir_61d85e3776df91.47603731', '3642', '2022-01-07 19:37:27', 'pdf');
 
 -- --------------------------------------------------------
 
@@ -85,7 +91,13 @@ CREATE TABLE `fileinfo` (
 --
 
 INSERT INTO `fileinfo` (`id`, `file_id`, `storage_id`, `download_count`, `status`, `old_status`, `password`, `description`) VALUES
-(179, 181, 3, 0, 0, NULL, '', '');
+(182, 184, NULL, 1, 0, NULL, '', ''),
+(183, 185, NULL, 0, 0, NULL, '', ''),
+(186, 188, 3, 0, 0, NULL, '', ''),
+(187, 189, 1, 0, 1, NULL, '$2y$10$o2GV1YMF/lRBNZwPUtYjSePqGg.d1JczYMM7UcwV7IhYuvHH6bbQ6', 'test note'),
+(188, 190, 1, 0, 0, NULL, '', ''),
+(189, 191, NULL, 0, 0, NULL, '', ''),
+(190, 192, 1, 0, 0, NULL, '', '');
 
 -- --------------------------------------------------------
 
@@ -99,6 +111,15 @@ CREATE TABLE `generatedlinks` (
   `file_info_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `generatedlinks`
+--
+
+INSERT INTO `generatedlinks` (`id`, `guid`, `file_info_id`) VALUES
+(71, '259516A523FF5D10BA8F295DA382FCBF', 182),
+(73, '798F32F46FCF4BCD11F589B7BCE34277', 188),
+(74, 'D08FB24D756BD0ADA9B96E092271DFD2', 189);
+
 -- --------------------------------------------------------
 
 --
@@ -110,6 +131,7 @@ CREATE TABLE `report` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `fileinfo_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -117,8 +139,10 @@ CREATE TABLE `report` (
 -- Dumping data for table `report`
 --
 
-INSERT INTO `report` (`id`, `name`, `email`, `description`, `fileinfo_id`) VALUES
-(3, 'test', 'test@test.com', 'this is test report', 179);
+INSERT INTO `report` (`id`, `name`, `email`, `description`, `created_at`, `fileinfo_id`) VALUES
+(20, 'elgun', 'elgun@gmail.com', 'contains virus', '2022-01-07 15:14:35', 186),
+(21, 'ahmed', 'ahmed@hotmail.com', 'this file is malicious', '2022-01-07 15:14:56', 186),
+(22, 'abil', 'abil@gmail.com', 'copyright issue', '2022-01-07 15:15:13', 183);
 
 -- --------------------------------------------------------
 
@@ -165,8 +189,8 @@ CREATE TABLE `userstorage` (
 --
 
 INSERT INTO `userstorage` (`id`, `storage_size`, `used_size`, `file_count`, `user_id`) VALUES
-(1, '21474836480', '0', 0, 1),
-(3, '21474836480', '5780819', 1, 2);
+(1, '21474836480', '3688', 3, 1),
+(3, '21474836480', '1711', 1, 2);
 
 --
 -- Indexes for dumped tables
@@ -234,25 +258,25 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `file`
 --
 ALTER TABLE `file`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=182;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
 
 --
 -- AUTO_INCREMENT for table `fileinfo`
 --
 ALTER TABLE `fileinfo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=191;
 
 --
 -- AUTO_INCREMENT for table `generatedlinks`
 --
 ALTER TABLE `generatedlinks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `report`
 --
 ALTER TABLE `report`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `user`
