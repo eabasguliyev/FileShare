@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 07, 2022 at 05:01 PM
+-- Generation Time: Jan 08, 2022 at 12:19 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -39,7 +39,8 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `username`, `password`, `access_status`) VALUES
-(1, 'admin', '$2y$10$zzLOfOl8056/GGxzUDdW8uG8bFgKgN3gyiZnpYu1cMMa3as9xYDMW', 2);
+(1, 'admin', '$2y$10$zzLOfOl8056/GGxzUDdW8uG8bFgKgN3gyiZnpYu1cMMa3as9xYDMW', 2),
+(2, 'test', '$2y$10$mBOA40pk/LhUIajJAh185OgHRlTEDc2/QWt4fUmUjvqXuXjaB13d2', 1);
 
 -- --------------------------------------------------------
 
@@ -134,15 +135,6 @@ CREATE TABLE `report` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `fileinfo_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `report`
---
-
-INSERT INTO `report` (`id`, `name`, `email`, `description`, `created_at`, `fileinfo_id`) VALUES
-(20, 'elgun', 'elgun@gmail.com', 'contains virus', '2022-01-07 15:14:35', 186),
-(21, 'ahmed', 'ahmed@hotmail.com', 'this file is malicious', '2022-01-07 15:14:56', 186),
-(22, 'abil', 'abil@gmail.com', 'copyright issue', '2022-01-07 15:15:13', 183);
 
 -- --------------------------------------------------------
 
@@ -252,7 +244,7 @@ ALTER TABLE `userstorage`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `file`

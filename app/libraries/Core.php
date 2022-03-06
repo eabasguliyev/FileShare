@@ -32,7 +32,7 @@
 
                 unset($url[$index]);
                 $index++;
-            }else{
+            }else if(isset($_COOKIE['lang'])){
                 self::$lang = $_COOKIE['lang'];
             }
 

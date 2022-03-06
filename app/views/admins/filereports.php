@@ -143,7 +143,7 @@
                     
                     $('#delete-report').prop('href', "<?= URLROOT . '/reports/deletereport/' ?>"
                                              + obj.report_id);
-                    $('#delete-file').prop('href', "<?= URLROOT . '/admins/deletefile/' ?>" 
+                    $('#delete-file').prop('href', "<?= URLROOT . '/files/deletefile/' ?>" 
                                             + obj.file_id);
                     myModal.show();
                 })
